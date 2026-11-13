@@ -87,4 +87,21 @@ class CompteTest {
 				.hasMessageContaining("Le solde initial et le découvert autorisé sont obligatoires");
 	}
 
+	@Test 
+	@DisplayName("C2: Le découvert autorisé doit être positif ou nul")
+	void testDecouvertAutoriseNegatif(){
+		//arrange
+		String numero = "FR001";
+		String titulaire = "Jean";
+		BigDecimal solde = new BigDecimal("100.00");
+		BigDecimal decouvert = new BigDecimal("-10.00");
+
+		Throwable erreur = catchThrowable(() -> {
+			new Compte(numero, titulaire, solde, decouvert);
+		});
+
+		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Le découvert autorisé doit être positif ou nul");
+	}
+
 }
