@@ -60,7 +60,7 @@ class CompteTest {
 		});
 
 		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
-				.hasMessageContaining("Le titulaire du compte est obligatoire");
+				.hasMessageContaining("Le titulaire est obligatoire");
 	}
 
 }
