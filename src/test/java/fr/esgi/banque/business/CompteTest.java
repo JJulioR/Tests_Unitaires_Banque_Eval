@@ -63,4 +63,28 @@ class CompteTest {
 				.hasMessageContaining("Le titulaire est obligatoire");
 	}
 
+	@Test 
+	@DisplayName("C2: Solde initial et le découvert autorisé sont obligatoires")
+	void testsoldeInitialNullDecouvertAutoriseNull(){
+		//arrange
+		String numero = "FR001";
+		String titulaire = "Jean";
+		BigDecimal solde = null;
+		BigDecimal decouvert = null;
+
+		Throwable erreurSoldNull = catchThrowable(() -> {
+			new Compte(numero, titulaire, solde, decouvert);
+		});
+
+		assertThat(erreurSoldNull).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Le solde initial et le découvert autorisé sont obligatoires");
+
+		Throwable erreurDecouvertNull = catchThrowable(() -> {
+			new Compte(numero, titulaire, new BigDecimal("100.00"), decouvert);
+		});
+
+		assertThat(erreurDecouvertNull).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Le solde initial et le découvert autorisé sont obligatoires");
+	}
+
 }
