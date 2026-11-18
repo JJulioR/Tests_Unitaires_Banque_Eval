@@ -6,16 +6,16 @@ import fr.esgi.banque.service.NotificationService;
 import java.math.BigDecimal;
 import java.time.Clock;
 
-public class VirementsServiceImpl {
-    private final CompteRepository repository;
-    private final NotificationService notifications;
-    private final Clock horloge;
+public class VirementsServiceImpl{
+   private final CompteRepository repository;
+   private final NotificationService notifications;
+   private final Clock horloge;
 
     public VirementsServiceImpl(CompteRepository repository, NotificationService notifications, Clock horloge) {
-        this.repository = repository;
-        this.notifications = notifications;
-        this.horloge = horloge;
-    }
+     this.repository = repository;
+     this.notifications = notifications;
+     this.horloge = horloge;
+}
 
     public Virement virer(String numeroSource, String numeroDestination, BigDecimal montant) {
         if (montant == null || montant.signum() <= 0) {
@@ -24,7 +24,14 @@ public class VirementsServiceImpl {
         if (numeroSource != null && numeroSource.equals(numeroDestination)) {
              throw new IllegalArgumentException("Virement vers le même compte impossible");
         }
-        
-        return null; 
+
+        var compteSourceOpt = repository.trouver(numeroSource);
+        var compteDestOpt = repository.trouver(numeroDestination);
+
+        if (compteSourceOpt.isEmpty() || compteDestOpt.isEmpty()) {
+            throw new fr.esgi.banque.exception.CompteIntrouvableException("L'un des comptes est introuvable");
+        }
+
+        return null;
     }
 }
