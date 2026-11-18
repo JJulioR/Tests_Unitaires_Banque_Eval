@@ -104,4 +104,43 @@ class CalculFraisTest {
         // assert
         assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(2.0));
     }
+
+    @Test 
+    @DisplayName ("F5 : Supplément premium (5€) s'ajoute aux frais de tenue")
+    void SupplementPremiumAvecFraisTenue(){
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+
+        // act
+        BigDecimal frais = calcul.fraisMensuels(28, new BigDecimal("67.67"), true);
+
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(7.0));
+    }
+
+    @Test 
+    @DisplayName ("F5 : Supplément premium (5€) est dû même si les frais de tenue sont offerts (age)")
+    void SupplementPremiumAvecFraisTenueOffertsAge(){
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+
+        // act
+        BigDecimal frais = calcul.fraisMensuels(23, new BigDecimal("100.00"), true);
+
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(5.0));
+    }
+
+    @Test
+    @DisplayName ("F5 : Supplément premium (5€) est dû même si les frais de tenue sont offerts (solde moyen)")
+    void SupplementPremiumAvecFraisTenueOffertsSoldeMoyen(){
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+
+        // act
+        BigDecimal frais = calcul.fraisMensuels(98, new BigDecimal("1100.00"), true);
+
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(5.0));
+    }
 }
