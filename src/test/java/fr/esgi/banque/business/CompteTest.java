@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.jupiter.api.DisplayName;
 
-
 /**
  * Test d'exemple fourni pour vérifier que le projet est bien configuré.
  * À compléter (partie A).
@@ -149,5 +148,35 @@ class CompteTest {
 		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("Le montant à débiter doit être strictement positif");
 	}
+
+	@Test 
+	@DisplayName ("C5 : Débiter un montant supérieur au solde + découvert autorisé est refusé")
+	void testDebiterMontantSuperieurSoldeDecouvertAutorise(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("100.00"), new BigDecimal("50.00"));
+		BigDecimal montantSuperieur = new BigDecimal("200.00");
+
+		Throwable erreur = catchThrowable(() -> {
+			compte.debiter(montantSuperieur);
+		});
+
+		assertThat(erreur).isInstanceOf(SoldeInsuffisantException.class);
+	}
+
+	@Test 
+	@DisplayName("C5 : débite jusqu'à la limite du découvert autorisé est accepté")
+	void testDebiterMontantEgaleSoldeDecouvertAutorise(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("100.00"), new BigDecimal("50.00"));
+		BigDecimal montantEgale = new BigDecimal("150.00");
+
+		//act
+		compte.debiter(montantEgale);
+
+		//assert
+		assertThat(compte.getSolde()).isEqualByComparingTo("-50.00");
+	}
+
+
 
 }
