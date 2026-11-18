@@ -54,4 +54,29 @@ class CalculFraisTest {
         // assert
         assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(2.0));
     }
+
+    @ParameterizedTest 
+    @ValueSource (ints = {18, 25})
+    @DisplayName ("F3 : Les moins de 26 ans ne payent pas de frais de tenue")
+    void FraisOffertsMoins26ans(int ageJeune){
+        // arrange
+
+        CalculFrais calcul = new CalculFrais();
+        // act
+
+        BigDecimal frais = calcul.fraisMensuels(ageJeune, BigDecimal.valueOf(1000.0), false);
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(0.0));
+    }
+
+    @Test 
+    @DisplayName("F3: Un titulair de 26ans et  plus paie les frais de tenue")
+    void FraisTenue26ansEtPlus(){
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+        // act
+        BigDecimal frais = calcul.fraisMensuels(26, BigDecimal.valueOf(1000.0), false);
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(2.0));
+    }
 }
