@@ -89,5 +89,30 @@ class VirementsServiceImplTest {
                  .hasMessageContaining("L'un des comptes est introuvable");
     }
 
+    @Test 
+    @DisplayName ("V4 Un virement est refusé si le solde du compte source est insuffisant")
+    void CompteSourceSoldeInsuffisant() {
+        // arrange
+        String numeroSource = "FR1";
+        String numeroDestination = "FR2";
+        BigDecimal montant = new BigDecimal("100.00");
+
+        fr.esgi.banque.business.Compte compteSource = new fr.esgi.banque.business.Compte(
+                numeroSource, "Bob", new BigDecimal("50.00"), BigDecimal.ZERO);
+        fr.esgi.banque.business.Compte compteDest = new fr.esgi.banque.business.Compte(
+                numeroDestination, "Alice", new BigDecimal("100.00"), BigDecimal.ZERO);
+
+        when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.of(compteSource));
+        when(repository.trouver(numeroDestination)).thenReturn(java.util.Optional.of(compteDest));
+
+        // Act
+        Throwable erreur = catchThrowable(() -> {
+            virementsService.virer(numeroSource, numeroDestination, montant);
+        });
+
+        // Assert
+        assertThat(erreur).isInstanceOf(fr.esgi.banque.business.SoldeInsuffisantException.class);
+    }
+
 
 }
