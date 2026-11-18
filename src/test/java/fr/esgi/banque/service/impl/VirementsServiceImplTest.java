@@ -32,12 +32,12 @@ class VirementsServiceImplTest {
     @Test
     @DisplayName("V1 : Un virement avec un montant null est refusé")
     void testV1MontantNull() {
-        // Act
+        // act
         Throwable erreur = catchThrowable(() -> {
             virementsService.virer("FR1", "FR2", null);
         });
 
-        // Assert
+        // assert
         assertThat(erreur).isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,12 +45,12 @@ class VirementsServiceImplTest {
     @ValueSource(strings = {"0.00", "-10.00"})
     @DisplayName("V1 : Un virement avec un montant nul ou négatif est refusé")
     void testV1MontantNulOuNegatif(String montantInvalide) {
-        // Act
+        // act
         Throwable erreur = catchThrowable(() -> {
             virementsService.virer("FR1", "FR2", new BigDecimal(montantInvalide));
         });
 
-        // Assert
+        // assert
         assertThat(erreur).isInstanceOf(IllegalArgumentException.class);
     }
 }
