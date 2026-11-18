@@ -203,6 +203,31 @@ class CompteTest {
 		assertThat(estVide).isTrue();
 	}
 
+	@Test 
+	@DisplayName ( "C7: estADecouvert() est vrai quand le solde est strictement négatif")
+	void testEstADecouvertSoldeNegatif(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("-10.00"), new BigDecimal("0"));
+
+		//act
+		boolean estADecouvert = compte.estADecouvert();
+
+		//assert
+		assertThat(estADecouvert).isTrue();
+	}
+
+	@Test 
+	@DisplayName ( "C7: estADecouvert() est faux quand le solde est à 0")
+	void testEstADecouvertSoldeZero(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("0.00"), new BigDecimal("0"));
+
+		//act
+		boolean estADecouvert = compte.estADecouvert();
+
+		//assert
+		assertThat(estADecouvert).isFalse();
+	}
 
 
 
