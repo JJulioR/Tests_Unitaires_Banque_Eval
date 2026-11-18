@@ -1,6 +1,7 @@
 package fr.esgi.banque.service.impl;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
+import fr.esgi.banque.business.Compte;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,14 +79,14 @@ class VirementsServiceImplTest {
 
         when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.empty());
 
-
         // act
         Throwable erreur = catchThrowable(() -> {
-            virementsService.virer("FR1", "FR2", new BigDecimal("100.00"));
+            virementsService.virer(numeroSource, numeroDestination, montant);
         });
 
         // assert
-        assertThat(erreur).isInstanceOf(fr.esgi.banque.exception.CompteIntrouvableException.class);
+        assertThat(erreur).isInstanceOf(fr.esgi.banque.exception.CompteIntrouvableException.class)
+                 .hasMessageContaining("L'un des comptes est introuvable");
     }
 
 
