@@ -105,5 +105,19 @@ class CompteTest {
 	}
 
 	
+	@Test 
+	@DisplayName("C3 : créditer n'accepter que des montants positifs")
+	void testCrediterMontantNegatif(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("100.00"), new BigDecimal("0"));
+		BigDecimal montantZero = new BigDecimal("0");
+
+		Throwable erreur = catchThrowable(() -> {
+			compte.crediter(montantZero);
+		});
+
+		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Le montant à créditer doit être strictement positif");
+	}
 
 }
