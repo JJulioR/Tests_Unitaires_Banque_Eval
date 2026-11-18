@@ -177,6 +177,33 @@ class CompteTest {
 		assertThat(compte.getSolde()).isEqualByComparingTo("-50.00");
 	}
 
+	@Test 
+	@DisplayName ("C6 : estVide() est vrai quand solde est à 0 avec décimal")
+	void testEstVideSoldeZeroDecimal(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("0.00"), new BigDecimal("0"));
+
+		//act
+		boolean estVide = compte.estVide();
+
+		//assert
+		assertThat(estVide).isTrue();
+	}
+
+	@Test 
+	@DisplayName ("C6 : estVide() est vrai quand solde est à 0 sans décimal")
+	void testEstVideSoldeZeroSansDecimal(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("0"), new BigDecimal("0"));
+
+		//act
+		boolean estVide = compte.estVide();
+
+		//assert
+		assertThat(estVide).isTrue();
+	}
+
+
 
 
 }
