@@ -53,4 +53,18 @@ class VirementsServiceImplTest {
         // assert
         assertThat(erreur).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("V2 : Un virement vers le même compte est refusé")
+    void testV2MemeCompteRefuse() {
+        // ct
+        Throwable erreur = catchThrowable(() -> {
+            virementsService.virer("FR1", "FR1", new BigDecimal("100.00"));
+        });
+
+        // assert
+        assertThat(erreur).isInstanceOf(IllegalArgumentException.class);
+    }
+
+
 }
