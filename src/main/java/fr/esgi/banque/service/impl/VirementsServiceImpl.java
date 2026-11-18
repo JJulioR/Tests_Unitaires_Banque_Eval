@@ -47,8 +47,10 @@ public class VirementsServiceImpl{
         Virement virement = new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
 
         // Notif
-        notifications.alerter(compteSource.getTitulaire(),
-                "Virement de " + montant + " € effectué vers " + numeroDestination);
+        if (montant.compareTo(new BigDecimal("10000")) > 0) {
+            notifications.alerter(compteSource.getTitulaire(),
+                    "Virement important de " + montant + " € vers " + numeroDestination);
+        }
 
         return virement;
     }
