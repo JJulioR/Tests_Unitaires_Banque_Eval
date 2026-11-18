@@ -79,4 +79,29 @@ class CalculFraisTest {
         // assert
         assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(2.0));
     }
+
+    @ParameterizedTest 
+    @ValueSource (strings = {"1000.00", "1500.00"})
+    @DisplayName ("F4 : Les frais de tenue sont offerts si le solde moyen atteint 1000 euros ou plus")
+    void FraisOffertsSoldeMoyenElevé(String solde) {
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+        // act
+        BigDecimal frais = calcul.fraisMensuels(28, new BigDecimal(solde), false);
+
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(0.0));
+    }
+
+    @Test
+    @DisplayName ("F4 : Les frais de tenue sont dus si le solde moyen est inférieur à 1000 euros")
+    void FraisTenueSoldeMoyenFaible(){
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+        // act
+        BigDecimal frais = calcul.fraisMensuels(28, new BigDecimal("69.67"), false);
+
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(2.0));
+    }
 }
