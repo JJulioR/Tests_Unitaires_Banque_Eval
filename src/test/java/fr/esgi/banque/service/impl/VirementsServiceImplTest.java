@@ -2,6 +2,8 @@ package fr.esgi.banque.service.impl;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
 import fr.esgi.banque.business.Compte;
+import fr.esgi.banque.business.Virement;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,10 +28,16 @@ class VirementsServiceImplTest {
     @Mock
     private NotificationService notifications;
 
-    @Mock
-    private Clock horloge;
 
-    @InjectMocks
+   private final java.time.Clock horloge = java.time.Clock.fixed(
+            java.time.Instant.parse("2026-11-18T10:00:00Z"),
+            java.time.ZoneId.of("UTC"));
+
+    @org.junit.jupiter.api.BeforeEach
+    void setUp() {
+        virementsService = new VirementsServiceImpl(repository, notifications, horloge);
+    }
+
     private VirementsServiceImpl virementsService;
 
     @Test
@@ -113,6 +121,8 @@ class VirementsServiceImplTest {
 
         // Assert
         assertThat(erreur).isInstanceOf(fr.esgi.banque.business.SoldeInsuffisantException.class);
+        org.mockito.Mockito.verify(repository, org.mockito.Mockito.never())
+                .sauvegarder(org.mockito.ArgumentMatchers.any());
     }
 
     @Test
@@ -123,27 +133,27 @@ class VirementsServiceImplTest {
         String numeroDestination = "FR2";
         BigDecimal montant = new BigDecimal("30.00");
 
-        // On instancie de vrais objets métier Compte (on ne se mocke pas)
-        fr.esgi.banque.business.Compte compteSource = new fr.esgi.banque.business.Compte(
-                numeroSource, "Bob", new BigDecimal("100.00"), BigDecimal.ZERO);
-        fr.esgi.banque.business.Compte compteDest = new fr.esgi.banque.business.Compte(
-                numeroDestination, "Alice", new BigDecimal("50.00"), BigDecimal.ZERO);
+        Compte compteSource = new Compte(numeroSource, "Bob", new BigDecimal("100.00"), BigDecimal.ZERO);
+        Compte compteDest = new Compte(numeroDestination, "Alice", new BigDecimal("50.00"), BigDecimal.ZERO);
 
         when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.of(compteSource));
         when(repository.trouver(numeroDestination)).thenReturn(java.util.Optional.of(compteDest));
 
-        // act
-        fr.esgi.banque.business.Virement resultat = virementsService.virer(numeroSource, numeroDestination, montant);
+        // Act
+        Virement resultat = virementsService.virer(numeroSource, numeroDestination, montant);
 
-        // Assert (l'etat)
+        // Assert (État)
         assertThat(resultat).isNotNull();
+        assertThat(resultat.numeroSource()).isEqualTo(numeroSource);
+        assertThat(resultat.numeroDestination()).isEqualTo(numeroDestination);
+        assertThat(resultat.montant()).isEqualByComparingTo("30.00");
+        assertThat(resultat.date()).isEqualTo(java.time.LocalDate.now(horloge));
         assertThat(compteSource.getSolde()).isEqualByComparingTo("70.00");
         assertThat(compteDest.getSolde()).isEqualByComparingTo("80.00");
 
-        // Assert (Comportement avec Mockito)
+        // Assert (Comportement)
         verify(repository).sauvegarder(compteSource);
         verify(repository).sauvegarder(compteDest);
-        // Vérifie aussi l'appel à notifications si ton interface NotificationService a une méthode dédiée
     }
 
 

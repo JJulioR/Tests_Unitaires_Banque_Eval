@@ -1,10 +1,11 @@
 package fr.esgi.banque.service.impl;
-import fr.esgi.banque.service.impl.VirementsServiceImpl;
 import fr.esgi.banque.business.Virement;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
 import java.math.BigDecimal;
 import java.time.Clock;
+import java.time.LocalDate;
+import fr.esgi.banque.business.Compte;
 
 public class VirementsServiceImpl{
    private final CompteRepository repository;
@@ -32,13 +33,23 @@ public class VirementsServiceImpl{
             throw new fr.esgi.banque.exception.CompteIntrouvableException("L'un des comptes est introuvable");
         }
 
-        fr.esgi.banque.business.Compte compteSource = compteSourceOpt.get();
-        fr.esgi.banque.business.Compte compteDest = compteDestOpt.get();
+        Compte compteSource = compteSourceOpt.get();
+        Compte compteDest = compteDestOpt.get();
 
-        if (compteSource.getSolde().compareTo(montant) < 0) {
-            throw new fr.esgi.banque.business.SoldeInsuffisantException(numeroSource, montant);
-        }
+        compteSource.debiter(montant);
+        compteDest.crediter(montant);
 
-        return null;
+        // V5 : sauvegarde 2 comptes
+        repository.sauvegarder(compteSource);
+        repository.sauvegarder(compteDest);
+
+        // V5: création du record Virement avec l'horloge 
+        Virement virement = new Virement(numeroSource, numeroDestination, montant, LocalDate.now(horloge));
+
+        // Notif
+        notifications.alerter(compteSource.getTitulaire(),
+                "Virement de " + montant + " € effectué vers " + numeroDestination);
+
+        return virement;
     }
 }
