@@ -7,7 +7,7 @@ Vous reprenez le code d'une petite application bancaire. Il est livré avec un s
 - **Partie A** (environ 1h30) : tester le code existant, trouver les défauts et les corriger.
 - **Partie B** (environ 2h) : développer un service de virement **en TDD**, avec Mockito.
 
-Outils : JUnit (avec les tests paramétrés), AssertJ et Mockito. Le `pom.xml` est fourni et ne doit pas être modifié (sauf écart de version avec votre JDK local).
+Outils : Java 25 (LTS), JUnit (avec les tests paramétrés), AssertJ et Mockito. Le `pom.xml` est fourni et ne doit pas être modifié, sauf pour adapter la version Java configurée à votre JDK local.
 
 ## 0. Démarrage (5 min)
 

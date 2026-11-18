@@ -1,5 +1,5 @@
 package fr.esgi.banque.service.impl;
-
+import fr.esgi.banque.service.impl.VirementsServiceImpl;
 import fr.esgi.banque.business.Virement;
 import fr.esgi.banque.service.CompteRepository;
 import fr.esgi.banque.service.NotificationService;
@@ -21,7 +21,10 @@ public class VirementsServiceImpl {
         if (montant == null || montant.signum() <= 0) {
             throw new IllegalArgumentException("Le montant du virement doit être strictement positif");
         }
+        if (numeroSource != null && numeroSource.equals(numeroDestination)) {
+             throw new IllegalArgumentException("Virement vers le même compte impossible");
+        }
         
-        return null; // La suite sera implémentée avec les règles suivantes
+        return null; 
     }
 }
