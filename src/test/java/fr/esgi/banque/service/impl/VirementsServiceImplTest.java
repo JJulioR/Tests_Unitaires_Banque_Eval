@@ -156,5 +156,50 @@ class VirementsServiceImplTest {
         verify(repository).sauvegarder(compteDest);
     }
 
+    @Test
+    @DisplayName("V6 : Un virement strictement supérieur à 10 000 € déclenche une alerte au titulaire source")
+    void AlerteSiMontantSuperieurA10000() {
+        // Arrange
+        String numeroSource = "FR1";
+        String numeroDestination = "FR2";
+        BigDecimal montant = new BigDecimal("10000.01");
+
+        Compte compteSource = new Compte(numeroSource, "Bob", new BigDecimal("20000.00"), BigDecimal.ZERO);
+        Compte compteDest = new Compte(numeroDestination, "Alice", new BigDecimal("100.00"), BigDecimal.ZERO);
+
+        when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.of(compteSource));
+        when(repository.trouver(numeroDestination)).thenReturn(java.util.Optional.of(compteDest));
+
+        // Act
+        virementsService.virer(numeroSource, numeroDestination, montant);
+
+        // Assert
+        org.mockito.Mockito.verify(notifications).alerter(
+                org.mockito.ArgumentMatchers.eq("Bob"),
+                org.mockito.ArgumentMatchers.anyString());
+    }
+
+    @Test
+    @DisplayName("V6 : Un virement de 10000 € exactement ne déclenche pas d'alerte")
+    void PasDAlerteSiMontantEgalA10000() {
+        // aerange
+        String numeroSource = "FR1";
+        String numeroDestination = "FR2";
+        BigDecimal montant = new BigDecimal("10000.00");
+
+        Compte compteSource = new Compte(numeroSource, "Bob", new BigDecimal("20000.00"), BigDecimal.ZERO);
+        Compte compteDest = new Compte(numeroDestination, "Alice", new BigDecimal("100.00"), BigDecimal.ZERO);
+
+        when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.of(compteSource));
+        when(repository.trouver(numeroDestination)).thenReturn(java.util.Optional.of(compteDest));
+
+        // act
+        virementsService.virer(numeroSource, numeroDestination, montant);
+
+        // assert
+        org.mockito.Mockito.verify(notifications, org.mockito.Mockito.never())
+                .alerter(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
+    }
+
 
 }
