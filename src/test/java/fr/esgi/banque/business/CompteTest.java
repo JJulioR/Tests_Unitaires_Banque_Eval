@@ -107,7 +107,7 @@ class CompteTest {
 	
 	@Test 
 	@DisplayName("C3 : créditer n'accepter que des montants positifs")
-	void testCrediterMontantNegatif(){
+	void testCrediterMontantZero(){
 		//arrange
 		Compte compte = new Compte("FR001", "Jean", new BigDecimal("100.00"), new BigDecimal("0"));
 		BigDecimal montantZero = new BigDecimal("0");
@@ -118,6 +118,36 @@ class CompteTest {
 
 		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("Le montant à créditer doit être strictement positif");
+	}
+
+	@Test 
+	@DisplayName ("C4 : débiter 0 est refusé")
+	void testDebiterMontantZero(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("100.00"), new BigDecimal("0"));
+		BigDecimal montantZero = new BigDecimal("0");
+
+		Throwable erreur = catchThrowable(() -> {
+			compte.debiter(montantZero);
+		});
+
+		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Le montant à débiter doit être strictement positif");
+	}
+
+	@Test 
+	@DisplayName ("C4 : débiter un montant négatif est refusé")
+	void testDebiterMontantNegatif(){
+		//arrange
+		Compte compte = new Compte("FR001", "Jean", new BigDecimal("100.00"), new BigDecimal("0"));
+		BigDecimal montantNegatif = new BigDecimal("-10.00");
+
+		Throwable erreur = catchThrowable(() -> {
+			compte.debiter(montantNegatif);
+		});
+
+		assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("Le montant à débiter doit être strictement positif");
 	}
 
 }
