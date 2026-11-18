@@ -66,5 +66,26 @@ class VirementsServiceImplTest {
         assertThat(erreur).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test 
+    @DisplayName ("V3: Un virement est refusé si le compte source n'existe pas")
+    void CompteSourceInexistant() {
+        // arrange
+
+        String numeroSource = "FR_INCONNU";
+        String numeroDestination = "FR2";
+        BigDecimal montant = new BigDecimal("100.00");
+
+        when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.empty());
+
+
+        // act
+        Throwable erreur = catchThrowable(() -> {
+            virementsService.virer("FR1", "FR2", new BigDecimal("100.00"));
+        });
+
+        // assert
+        assertThat(erreur).isInstanceOf(fr.esgi.banque.exception.CompteIntrouvableException.class);
+    }
+
 
 }
