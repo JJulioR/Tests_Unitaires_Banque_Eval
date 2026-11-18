@@ -10,6 +10,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.time.Clock;
@@ -112,6 +113,37 @@ class VirementsServiceImplTest {
 
         // Assert
         assertThat(erreur).isInstanceOf(fr.esgi.banque.business.SoldeInsuffisantException.class);
+    }
+
+    @Test
+    @DisplayName("V5 : Un virement valide met à jour les soldes, sauvegarde les comptes et notifie")
+    void VirementReussi() {
+        // arrange
+        String numeroSource = "FR1";
+        String numeroDestination = "FR2";
+        BigDecimal montant = new BigDecimal("30.00");
+
+        // On instancie de vrais objets métier Compte (on ne se mocke pas)
+        fr.esgi.banque.business.Compte compteSource = new fr.esgi.banque.business.Compte(
+                numeroSource, "Bob", new BigDecimal("100.00"), BigDecimal.ZERO);
+        fr.esgi.banque.business.Compte compteDest = new fr.esgi.banque.business.Compte(
+                numeroDestination, "Alice", new BigDecimal("50.00"), BigDecimal.ZERO);
+
+        when(repository.trouver(numeroSource)).thenReturn(java.util.Optional.of(compteSource));
+        when(repository.trouver(numeroDestination)).thenReturn(java.util.Optional.of(compteDest));
+
+        // act
+        fr.esgi.banque.business.Virement resultat = virementsService.virer(numeroSource, numeroDestination, montant);
+
+        // Assert (l'etat)
+        assertThat(resultat).isNotNull();
+        assertThat(compteSource.getSolde()).isEqualByComparingTo("70.00");
+        assertThat(compteDest.getSolde()).isEqualByComparingTo("80.00");
+
+        // Assert (Comportement avec Mockito)
+        verify(repository).sauvegarder(compteSource);
+        verify(repository).sauvegarder(compteDest);
+        // Vérifie aussi l'appel à notifications si ton interface NotificationService a une méthode dédiée
     }
 
 
