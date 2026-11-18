@@ -29,6 +29,11 @@ public class VirementsServiceImpl{
         var compteSourceOpt = repository.trouver(numeroSource);
         var compteDestOpt = repository.trouver(numeroDestination);
 
+        LocalDate dateVirement = LocalDate.now(horloge);
+        if (dateVirement.getDayOfWeek() == java.time.DayOfWeek.SUNDAY) {
+            throw new fr.esgi.banque.exception.VirementRefuseException("Les virements sont refusés le dimanche");
+        }
+
         if (compteSourceOpt.isEmpty() || compteDestOpt.isEmpty()) {
             throw new fr.esgi.banque.exception.CompteIntrouvableException("L'un des comptes est introuvable");
         }
@@ -51,6 +56,8 @@ public class VirementsServiceImpl{
             notifications.alerter(compteSource.getTitulaire(),
                     "Virement important de " + montant + " € vers " + numeroDestination);
         }
+
+        
 
         return virement;
     }
