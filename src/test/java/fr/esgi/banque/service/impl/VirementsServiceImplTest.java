@@ -201,5 +201,29 @@ class VirementsServiceImplTest {
                 .alerter(org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any());
     }
 
+    @Test
+    @DisplayName("V7 : Aucun virement n'est accepté le dimanche et aucun compte n'est sauvegardé")
+    void VirementRefuseLeDimanche() {
+        // arrange
+        java.time.Clock horlogeDimanche = java.time.Clock.fixed(
+                java.time.Instant.parse("2026-11-15T10:00:00Z"), // 15 nov. 2026 = dimanche
+                java.time.ZoneId.of("UTC"));
+        VirementsServiceImpl serviceDimanche = new VirementsServiceImpl(repository, notifications, horlogeDimanche);
+
+        String numeroSource = "FR1";
+        String numeroDestination = "FR2";
+        BigDecimal montant = new BigDecimal("50.00");
+
+        // act
+        Throwable erreur = catchThrowable(() -> {
+            serviceDimanche.virer(numeroSource, numeroDestination, montant);
+        });
+
+        // assert
+        assertThat(erreur).isInstanceOf(fr.esgi.banque.exception.VirementRefuseException.class);
+        org.mockito.Mockito.verify(repository, org.mockito.Mockito.never())
+                .sauvegarder(org.mockito.ArgumentMatchers.any());
+    }
+
 
 }
