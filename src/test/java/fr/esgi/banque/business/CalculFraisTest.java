@@ -19,7 +19,7 @@ class CalculFraisTest {
         // arrange
         CalculFrais calcul = new CalculFrais();
 
-        // Act
+        // act
         Throwable erreur = catchThrowable(() -> {
             calcul.fraisMensuels(ageMineur, BigDecimal.ZERO,false);
         });
@@ -32,9 +32,9 @@ class CalculFraisTest {
     @Test
     @DisplayName("F1: Le solde moyen est obligatoire")
     void testSoldeMoyenNullRefuse() {
-        // Arrange
+        // arrange
         CalculFrais calcul = new CalculFrais();
-        // Act
+        // act
         Throwable erreur = catchThrowable(() -> {
             calcul.fraisMensuels(28, null, false);
         });
@@ -42,5 +42,16 @@ class CalculFraisTest {
         // Assert
         assertThat(erreur).isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Le solde moyen est obligatoire");
+    }
+
+    @Test 
+    @DisplayName("F2: Les frais de tenue par défaut sont de 2.00 euros")
+    void testFraisTenueParDefaut() {
+        // arrange
+        CalculFrais calcul = new CalculFrais();
+        // Aact
+        BigDecimal frais = calcul.fraisMensuels(28, BigDecimal.valueOf(1000.0), false);
+        // assert
+        assertThat(frais).isEqualByComparingTo(BigDecimal.valueOf(2.0));
     }
 }
